@@ -1,3 +1,6 @@
+const fs = require("fs");
+const logs = new console.Console(fs.createWriteStream("./logs.txt"));
+
 const VerifyToken = (req,res)=>{
     try {
         var accessToken = "WT4zxPRNQgkYv6IQ9bEy";
@@ -15,7 +18,18 @@ const VerifyToken = (req,res)=>{
 }
 
 const ReceivedMessage = (req,res)=>{
-    res.send("Message recieved")
+    try {
+        const [entry]=req.body["entry"];
+        const {changes}=entry;
+        const [{value:{messages}}]=changes;
+
+        logs.log(messages)
+
+        res.send("EVENT_SUCCESS")
+
+    }catch (e) {
+        res.send(e.message);
+    }
 }
 
 module.exports = {
